@@ -5,6 +5,7 @@ import pandas as pd
 from typing import List, Tuple
 from utils import list_data
 
+
 def impute_data(data_list: List[Tuple[np.array, np.array]]):
     """
     Fills in missing data by replacing it with the average value of the corresponding column.
@@ -14,7 +15,7 @@ def impute_data(data_list: List[Tuple[np.array, np.array]]):
         y = pd.DataFrame(y)
         missing_X = X.isnull().sum().sum()
         missing_y = y.isnull().sum().sum()
-        
+
         if missing_X > 0 or missing_y > 0:
             print(f"Dataset {i+1} has missing values:")
             print(f"Missing values in X: {missing_X}")
@@ -24,6 +25,7 @@ def impute_data(data_list: List[Tuple[np.array, np.array]]):
             data_list[i] = (X.to_numpy(), (y.to_numpy()).flatten())
         else:
             print(f"Dataset {i+1} has no missing values.")
+
 
 def remove_correlated_columns(df: pd.DataFrame, threshold: float = 0.8):
     """
@@ -40,22 +42,23 @@ def main(args):
     data_list = list_data(args.data_list)
 
     impute_data(data_list)
-    
+
     for i, (X, y) in enumerate(data_list):
         print(f"Checking dataset {i+1} for highly correlated columns...")
         X = pd.DataFrame(X)
-        y = pd.DataFrame(y, columns=['y'])
+        y = pd.DataFrame(y, columns=["y"])
         data = pd.concat([X, y], axis=1)
 
-        X_cleaned = remove_correlated_columns(data.drop(columns=['y']), threshold=0.8)
-        y_cleaned = data['y']
-        
+        X_cleaned = remove_correlated_columns(data.drop(columns=["y"]), threshold=0.8)
+        y_cleaned = data["y"]
+
         data_list[i] = (X_cleaned.to_numpy(), (y_cleaned.to_numpy()).flatten())
         print(f"{X.shape[1] - X_cleaned.shape[1]} highly correlated columns removed.")
 
     # Save data_list to a file - you can load it later using pickle.load()
-    with open('data_list.pkl', 'wb') as f:
+    with open("data_list.pkl", "wb") as f:
         pickle.dump(data_list, f)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
