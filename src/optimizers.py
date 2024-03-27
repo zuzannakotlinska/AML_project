@@ -2,7 +2,9 @@ import numpy as np
 
 
 class Adam:
-    def __init__(self, learning_rate: float, beta1: float, beta2: float) -> None:
+    def __init__(
+        self, learning_rate: float = 0.001, beta1: float = 0.9, beta2: float = 0.999
+    ) -> None:
         """
         Initialize the optimizer.
         Args:
