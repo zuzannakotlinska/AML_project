@@ -52,3 +52,26 @@ class SGD:
         """
         w -= self.learning_rate * grad_wrt_w
         return w
+    
+class IRLS:
+    def __init__(self, max_iter=100, tol=1e-4):
+        """
+        Initialize the IRLS optimizer.
+        Args:
+            max_iter: Maximum number of iterations
+            tol: Tolerance for the change in weights
+        """
+        self.max_iter = max_iter
+        self.tol = tol
+
+    def update(self, w: np.array, grad_wrt_w: np.array) -> np.array:
+        """
+        Update the weights using the Newton-Raphson method.
+        Args:
+            w: The current weights
+            grad_wrt_w: The gradient of the loss with respect to the weights
+        """
+        hessian = np.dot(grad_wrt_w.T, grad_wrt_w)
+        grad = np.dot(grad_wrt_w.T, grad_wrt_w)
+        w_new = w - np.dot(np.linalg.pinv(hessian), grad)
+        return w_new
