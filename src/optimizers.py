@@ -33,3 +33,22 @@ class Adam:
         v_hat = self.v / (1 - self.beta2**self.t)
         w -= self.learning_rate * m_hat / (np.sqrt(v_hat) + 1e-8)
         return w
+    
+class SGD:
+    def __init__(self, learning_rate: float) -> None:
+        """
+        Initialize the optimizer.
+        Args:
+            learning_rate: Learning rate
+        """
+        self.learning_rate = learning_rate
+
+    def update(self, w: np.array, grad_wrt_w: np.array) -> np.array:
+        """
+        Update the weights using the stochastic gradient descent update rule.
+        Args:
+            w: The weights
+            grad_wrt_w: The gradient of the loss with respect to the weights
+        """
+        w -= self.learning_rate * grad_wrt_w
+        return w
