@@ -3,7 +3,13 @@ import numpy as np
 
 class LogisticRegression:
     def __init__(
-        self, optimizer, eta: float = 0.05, epochs: int = 100, random_seed: int = 1, early_stopping_rounds = None, tol = 1e-4
+        self,
+        optimizer,
+        eta: float = 0.05,
+        epochs: int = 100,
+        random_seed: int = 1,
+        early_stopping_rounds=None,
+        tol=1e-4,
     ) -> None:
         """
         Initialize the logistic regression model.
@@ -21,6 +27,7 @@ class LogisticRegression:
         self.tol = tol
         self.random_seed = random_seed
         self.optimizer = optimizer
+        self.losses = []
 
     def initialize_weights(self, n_features: int) -> None:
         """
@@ -40,7 +47,7 @@ class LogisticRegression:
             z: The input to the activation function
         """
         return 1 / (1 + np.exp(-z))
-    
+
     def compute_loss(self, X, y):
         """
         Compute the negative log-likelihood loss.
@@ -62,7 +69,7 @@ class LogisticRegression:
             X: The training input samples
             y: The target values
         """
-        prev_loss = float('inf')
+        prev_loss = float("inf")
         increasing_loss_count = 0
         n_samples, n_features = X.shape
         self.initialize_weights(n_features)
@@ -79,12 +86,17 @@ class LogisticRegression:
             loss = self.compute_loss(X, y)
             if loss - prev_loss > self.tol:
                 increasing_loss_count += 1
-                if self.early_stopping_rounds is not None and increasing_loss_count >= self.early_stopping_rounds:
+                if (
+                    self.early_stopping_rounds is not None
+                    and increasing_loss_count >= self.early_stopping_rounds
+                ):
                     print(f"Stopping early at epoch {epoch + 1} with increasing loss")
                     return
             else:
                 increasing_loss_count = 0
             prev_loss = loss
+            # append log-likelihood
+            self.losses.append(loss)
 
     def predict(self, X: np.array) -> np.array:
         """
