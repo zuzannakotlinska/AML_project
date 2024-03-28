@@ -19,7 +19,7 @@ class Adam:
         self.v = 0
         self.t = 0
 
-    def update(self, w: np.array, grad_wrt_w: np.array) -> np.array:
+    def update(self, w: np.array, grad_wrt_w: np.array, *args) -> np.array:
         """
         Update the weights according to the Adaptive moment estimation update rule.
         Args:
@@ -43,7 +43,7 @@ class SGD:
         """
         self.learning_rate = learning_rate
 
-    def update(self, w: np.array, grad_wrt_w: np.array) -> np.array:
+    def update(self, w: np.array, grad_wrt_w: np.array, *args) -> np.array:
         """
         Update the weights using the stochastic gradient descent update rule.
         Args:
@@ -54,24 +54,25 @@ class SGD:
         return w
     
 class IRLS:
-    def __init__(self, max_iter=100, tol=1e-4):
+    def __init__(self, tol=1e-4) -> None:
         """
         Initialize the IRLS optimizer.
         Args:
             max_iter: Maximum number of iterations
             tol: Tolerance for the change in weights
         """
-        self.max_iter = max_iter
         self.tol = tol
 
-    def update(self, w: np.array, grad_wrt_w: np.array) -> np.array:
+    def update(self, w: np.array, grad_wrt_w: np.array, *args) -> np.array:
         """
         Update the weights using the Newton-Raphson method.
         Args:
             w: The current weights
             grad_wrt_w: The gradient of the loss with respect to the weights
         """
-        hessian = np.dot(grad_wrt_w.T, grad_wrt_w)
-        grad = np.dot(grad_wrt_w.T, grad_wrt_w)
-        w_new = w - np.dot(np.linalg.pinv(hessian), grad)
+        X, y = args[0], args[1]
+        R = np.diag(np.ravel(y * (1 - y)))
+        hessian = np.dot(np.dot(X.T, R), X) + self.tol * np.eye(X.shape[1])
+        w_new = w - np.dot(np.linalg.pinv(hessian), grad_wrt_w)
         return w_new
+    

@@ -32,7 +32,7 @@ def remove_correlated_columns(df: pd.DataFrame, threshold: float = 0.8):
     Removes features with correlation coefficient higher than 0.8.
     """
     corr_matrix = df.corr().abs()
-    upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(np.bool))
+    upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
     to_drop = [column for column in upper.columns if any(upper[column] > threshold)]
     df.drop(columns=to_drop, inplace=True)
     return df

@@ -82,7 +82,7 @@ class LogisticRegression:
                 error = y_pred - y[i]
                 grad_wrt_w = X[i] * error
                 # Update the weights
-                self.w = self.optimizer.update(self.w, grad_wrt_w)
+                self.w = self.optimizer.update(self.w, grad_wrt_w, X, y)
             loss = self.compute_loss(X, y)
             if loss - prev_loss > self.tol:
                 increasing_loss_count += 1
