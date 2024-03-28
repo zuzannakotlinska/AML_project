@@ -10,6 +10,7 @@ class LogisticRegression:
         random_seed: int = 1,
         early_stopping_rounds=None,
         tol=1e-4,
+        include_interactions=False
     ) -> None:
         """
         Initialize the logistic regression model.
@@ -20,6 +21,7 @@ class LogisticRegression:
             random_seed: Seed for initializing random weights and shuffling the dataset
             early_stopping_rounds: Number of epochs to wait for the training loss to decrease before stopping training
             tol: Tolerance for the training loss to consider convergence
+            include_interactions: Whether to include interaction terms in the model
         """
         self.eta = eta
         self.epochs = epochs
@@ -28,6 +30,7 @@ class LogisticRegression:
         self.random_seed = random_seed
         self.optimizer = optimizer
         self.losses = []
+        self.include_interactions = include_interactions
 
     def initialize_weights(self, n_features: int) -> None:
         """
@@ -47,7 +50,7 @@ class LogisticRegression:
             z: The input to the activation function
         """
         return 1 / (1 + np.exp(-z))
-
+    
     def compute_loss(self, X, y):
         """
         Compute the negative log-likelihood loss.
@@ -62,6 +65,24 @@ class LogisticRegression:
         loss = -np.mean(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))
         return loss
 
+    def add_interactions(self, X: np.array) -> np.array:
+        """
+        Add interaction terms to the feature matrix.
+        Args:
+            X: The input feature matrix
+        Returns:
+            X_interactions: The feature matrix with interaction terms added
+        """
+        n_samples, n_features = X.shape
+        interaction_terms = []
+
+        for i in range(n_features):
+            for j in range(i + 1, n_features):
+                interaction_terms.append(X[:, i] * X[:, j])
+
+        X_interactions = np.column_stack((X, *interaction_terms))
+        return X_interactions
+
     def fit(self, X: np.array, y: np.array) -> None:
         """
         Fit the logistic regression model.
@@ -72,7 +93,14 @@ class LogisticRegression:
         prev_loss = float("inf")
         increasing_loss_count = 0
         n_samples, n_features = X.shape
+
+        # If interactions are requested, add them to the feature matrix
+        if self.include_interactions:
+            X = self.add_interactions(X)
+            n_features = X.shape[1]  # Update the number of features
+
         self.initialize_weights(n_features)
+
         for epoch in range(self.epochs):
             for i in range(n_samples):
                 # Compute the negative gradient of the log-likelihood
@@ -104,7 +132,12 @@ class LogisticRegression:
         Args:
             X: The input samples
         """
+        # If interactions were included during training, add them to the input features for prediction
+        if self.include_interactions:
+            X = self.add_interactions(X)
         # Compute the output of the neuron
         z = np.dot(X, self.w)
         y_pred = np.round(self.sigmoid(z)).astype(int)
         return y_pred
+
+
