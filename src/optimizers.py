@@ -63,16 +63,13 @@ class IRLS:
         """
         self.tol = tol
 
-    def update(self, w: np.array, grad_wrt_w: np.array, *args) -> np.array:
-        """
-        Update the weights using the Newton-Raphson method.
-        Args:
-            w: The current weights
-            grad_wrt_w: The gradient of the loss with respect to the weights
-        """
-        X, y = args[0], args[1]
-        R = np.diag(np.ravel(y * (1 - y)))
-        hessian = np.dot(np.dot(X.T, R), X) + self.tol * np.eye(X.shape[1])
-        w_new = w - np.dot(np.linalg.pinv(hessian), grad_wrt_w)
-        return w_new
-    
+    def sigmoid(self,x):
+        return 1 / (1 +np.exp(-x))
+
+    def update(self, w, X, y):
+            y_pred = self.sigmoid(np.matmul(X, w))
+            R = np.diag(np.ravel(y_pred*(1-y_pred)))
+            grad = np.matmul(X.T,(y_pred-y))
+            hessian = np.matmul(np.matmul(X.T,R),X)+self.tol*np.eye(X.shape[1])
+            w -= np.matmul(np.linalg.inv(hessian),grad)
+            return w  

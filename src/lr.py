@@ -94,24 +94,28 @@ class LogisticRegression:
         increasing_loss_count = 0
         n_samples, n_features = X.shape
 
-        # If interactions are requested, add them to the feature matrix
         if self.include_interactions:
             X = self.add_interactions(X)
-            n_features = X.shape[1]  # Update the number of features
+            n_features = X.shape[1]
 
         self.initialize_weights(n_features)
 
         for epoch in range(self.epochs):
-            for i in range(n_samples):
-                # Compute the negative gradient of the log-likelihood
-                # for the ith training sample
-                z = np.dot(X[i], self.w)
-                y_pred = self.sigmoid(z)
-                error = y_pred - y[i]
-                grad_wrt_w = X[i] * error
-                # Update the weights
-                self.w = self.optimizer.update(self.w, grad_wrt_w, X, y)
-            loss = self.compute_loss(X, y)
+            if self.optimizer.__class__.__name__ == "IRLS":
+                self.w = self.optimizer.update(self.w, X, y)
+                loss = self.compute_loss(X, y)
+            else:
+                for i in range(n_samples):
+                    # Compute the negative gradient of the log-likelihood
+                    # for the ith training sample
+                    z = np.dot(X[i], self.w)
+                    y_pred = self.sigmoid(z)
+                    error = y_pred - y[i]
+                    grad_wrt_w = X[i] * error
+                    # Update the weights
+                    self.w = self.optimizer.update(self.w, grad_wrt_w, X, y)
+                loss = self.compute_loss(X, y)
+
             if loss - prev_loss > self.tol:
                 increasing_loss_count += 1
                 if (
