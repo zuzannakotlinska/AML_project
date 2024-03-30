@@ -42,6 +42,7 @@ class LogisticRegression:
         np.random.seed(self.random_seed)
         # Initialize weights between -1 and 1
         self.w = 2 * np.random.random(n_features) - 1
+        # self.w = np.zeros(n_features)
 
     def sigmoid(self, z: np.array) -> np.array:
         """
