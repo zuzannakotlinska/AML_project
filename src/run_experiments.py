@@ -58,7 +58,7 @@ def plot_losses(data_list, optimizer_classes, optimizer_params):
         plt.legend()
         plt.xlabel('Epochs')
         plt.ylabel('Log-likelihood')
-        plt.savefig(f'losses_{type(optimizer_class).__name__}.png')
+        plt.savefig(f'losses_{type(optimizer).__name__}.png')
         plt.show()
 
 def run_baseline(data_list, classifiers):
@@ -149,6 +149,7 @@ def main():
         plt.xlabel('Method')
         plt.ylabel('Balanced Accuracy')
         plt.legend(title='Interactions')
+        plt.savefig(f'boxplot_interactions_dataset_{dataset}.png')
         plt.show()
 
 
