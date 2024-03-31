@@ -40,9 +40,10 @@ class LogisticRegression:
         """
         # Set random seed for reproducibility
         np.random.seed(self.random_seed)
-        # Initialize weights between -1 and 1
-        # self.w = 2 * np.random.random(n_features) - 1
-        self.w = np.zeros(n_features)
+        if self.optimizer.__class__.__name__ == "IRLS":
+            self.w = np.zeros(n_features)
+        else:
+            self.w = 2 * np.random.random(n_features) - 1
 
     def sigmoid(self, z: np.array) -> np.array:
         """
